@@ -18,7 +18,7 @@ pipeline{
 		stage('Build') {
 
 			steps {
-				sh 'docker build -t sasankloki/webapp:1'
+				sh 'docker build -t sasankloki/webapp:1 .'
 			}
 		}
 
