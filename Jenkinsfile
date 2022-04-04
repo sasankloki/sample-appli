@@ -1,30 +1,34 @@
 pipeline {
-	agent any
-	stages {
-		
-		stage('Build Docker Image') {
-			steps {
-				withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]){
-					sh '''
-						docker build -t sasankloki/webapp:1 .
-					'''
-				}
-			}
+
+  environment {
+    registry = "sasankloki/webapp:1"
+    dockerImage = ""
+  }
+
+  agent any
+
+  stages {
+
+    stage('Checkout Source') {
+      steps {
+        git 'https://github.com/sasankloki/sample-appli.git'
+      }
     }
 
-		stage('Push Image To Dockerhub') {
-			steps {
-				withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]){
-					sh '''
-						docker login -u sasankloki -p LOKI@sasank96
-						docker push sasankloki/webapp:1
-					'''
-				}
-			}
-		}
+    stage('Build image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        }
+      }
+    }
 
-	
-	
-
-	}
-}
+    stage('Push Image') {
+      steps{
+        script {
+          docker.withRegistry( "" ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
