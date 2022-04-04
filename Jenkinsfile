@@ -1,6 +1,6 @@
 pipeline{
 
-	
+	agent {label 'linux'}
 
 	environment {
 		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
@@ -11,14 +11,14 @@ pipeline{
 	    stage('gitclone') {
 
 			steps {
-				git 'https://github.com/sasankloki/sample-appli.git'
+				git 'https://github.com/sasankloki/sample-appli/tree/master/tempdir.git'
 			}
 		}
 
 		stage('Build') {
 
 			steps {
-				sh 'docker build -t sasankloki/webapp .'
+				sh 'docker build -t sasankloki/webapp:1 .'
 			}
 		}
 
